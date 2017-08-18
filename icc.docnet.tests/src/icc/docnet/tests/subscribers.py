@@ -26,3 +26,7 @@ def clear_storages(event):
         s.commit()
         logger.debug("Cleared storage '{}'({})".format(s.storage_name,
                                                        s.__class__.__name__))
+
+
+def bad_subscriber(event):
+    raise RuntimeError("This is a bad subscriber.")
