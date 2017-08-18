@@ -1,0 +1,17 @@
+<configure xmlns="http://pylonshq.com/pyramid">
+
+  <include package="pyramid_zcml" />
+
+  <include file="webapp.zcml" package="icc.cellula"/>
+
+  <subscriber
+      for="pyramid.events.ApplicationCreated"
+      handler="icc.docnet.tests.subscribers.clean_indexes"
+      />
+
+  <subscriber
+      for="pyramid.events.ApplicationCreated"
+      handler="icc.docnet.tests.subscribers.clear_storages"
+      />
+
+</configure>

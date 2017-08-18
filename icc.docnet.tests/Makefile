@@ -7,39 +7,21 @@
 	upd-cat adjust-ini devel serv serve server
 
 LPYTHON=python3
-V=$(PWD)/../$(LPYTHON)
-VB=$(V)/bin
-PYTHON=$(VB)/$(LPYTHON)
+PYTHON=$(LPYTHON)
 ROOT=$(PWD)
 INI=icc.cellula-test
 # LCAT=src/icc/cellula/locales/
 
 #A virtualenv name
-LPYTHON=qgis
-V=$(HOME)/.pyenv/versions/$(LPYTHON)
-#VB=$(V)/bin
-#PYTHON=$(VB)/$(LPYTHON)
-#ROOT=$(PWD)
-#INI=icc.docnet.tests
-#LCAT=src/icc.docnet.tests/locale/
 
-#LG_DIR="link-grammar"
-#LG_LIB_DIR=$(TOP_DIR)/$(LG_DIR)/.libs
-#LG_HEADERS=$(TOP_DIR)
-SERVER_PORT=8081
-
-env:
-	[ -d $(V) ] || virtualenv  $(V)
-	$(VB)/easy_install --upgrade pip
-
-pre-dev:env #dev-....
-	$(VB)/easy_install pip setuptools
+SERVER_PORT=8082
 
 setup:
-	$(PYTHON) setup.py build_ext # -L$(LG_LIB_DIR) -R$(LG_LIB_DIR) -I$(LG_HEADERS)
+	# $(PYTHON) setup.py build_ext # -L$(LG_LIB_DIR) -R$(LG_LIB_DIR) -I$(LG_HEADERS)
 	$(PYTHON) setup.py develop
 
 dev:	pre-dev setup-requs setup # upd-cat
+
 devel:
 	python setup.py develop
 
@@ -57,6 +39,7 @@ serv server serve: test
 
 run-tests:
 	nosetests -w src/tests
+
 test: adjust-ini
 	@ip a | grep 2001 || true
 	@ip a | grep 172. || true
@@ -67,18 +50,19 @@ test: adjust-ini
 	#cd src && $(PYTHON) app.py
 
 tests:	run-tests
+
 dev-icc.rdfservice:
 	make -C ../icc.rdfservice dev
 
 dev-icc.restfuldocs:
 	make -C ../icc.restfuldocs dev
-test:	setup run-tests
 
 gdb-test: setup
 	gdb --args $(PYTHON) $(VB)/nosetests -w src/tests
 
 py:
 	$(PYTHON)
+
 pot:
 	mkdir -p $(LCAT)
 	$(VB)/pot-create src -o $(LCAT)/messages.pot || echo "Someting unusual with pot."
@@ -90,7 +74,6 @@ init-ru:
 update-ru:
 	$(PYTHON) setup.py update_catalog -l ru -i $(LCAT)/messages.pot \
                             -d $(LCAT)
-
 comp-cat:
 	$(PYTHON) setup.py compile_catalog -d $(LCAT)
 

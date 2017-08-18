@@ -1,5 +1,7 @@
 # Example package with a console entry point
 from __future__ import print_function
 
-def main():
-    print ("Hello World")
+
+def includeme(global_config, **settings):
+    from .app import configuration
+    return configuration(global_config, **settings)
