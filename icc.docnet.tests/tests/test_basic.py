@@ -1,13 +1,9 @@
 from nose.plugins.skip import SkipTest
 from nose.tools import assert_raises, nottest
-from pyramid.config import Configurator
-from zope.component import getGlobalSiteManager
-from zope.interface import directlyProvides
-from isu.webapp.interfaces import IConfigurationEvent, IApplication
 
+from isu.webapp.interfaces import IApplication
 from isu.webapp import app
-
-from isu.enterprise.configurator import createConfigurator
+from zope.component import getUtility
 
 from pyramid.paster import get_appsettings
 
@@ -28,7 +24,7 @@ class TestBasic:
         pass
 
     def test_something(self):
-        assert 1 + 1 == 2
+        assert getUtility(IApplication, name="application") == application
 
     def tearDown(self):
         pass
