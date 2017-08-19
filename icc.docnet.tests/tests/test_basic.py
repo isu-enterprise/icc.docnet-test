@@ -5,7 +5,7 @@ from isu.webapp.interfaces import IApplication
 from isu.webapp import app
 from zope.component import getUtility, getSiteManager
 
-from pyramid.paster import get_app
+from pyramid.paster import get_app, setup_logging
 from icc.cellula.tasks import DocumentAcceptingTask, FileSystemScanTask
 
 from pyramid.threadlocal import get_current_registry
@@ -16,12 +16,20 @@ import icc.docnet.tests.app as testapp
 import pkg_resources
 import os.path
 
+
+INI = 'icc.cellula-test.ini'
+
+
 DATA_PATH = pkg_resources.resource_filename(
     'icc.docnet.tests', '../../../../../DATA')
 DATA_PATH = os.path.abspath(DATA_PATH)
 SRC = os.path.join(DATA_PATH, "source")
 
-application = get_app('icc.cellula-test-file.ini', name='main')
+application = get_app(INI, name='main')
+setup_logging(INI)
+
+import logging
+logger = logging.getLogger("icc.cellula")
 
 
 def bookname(name):
@@ -49,7 +57,8 @@ class TestBasic:
         DocumentAcceptingTask(content, headers).enqueue(block=False, view=None)
 
     def test_fs_scan(self):
-        FileSystemScanTask().enqueue()
+        # FileSystemScanTask().enqueue()
+        pass
 
     def tearDown(self):
         pass
@@ -65,3 +74,18 @@ class TestZStopQueue:
     def test_stop_queue(self):
         event = StopTests(application)
         getSiteManager().notify(event)
+
+
+def main():
+    t1 = TestBasic()
+    t1.setUp()
+
+    te = TestZStopQueue()
+    te.setUp()
+    te.test_stop_queue()
+    logger.info("Forced test stopped.")
+    print(logger)
+
+
+if __name__ == "__main__":
+    main()
