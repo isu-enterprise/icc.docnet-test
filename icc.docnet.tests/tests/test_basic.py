@@ -6,7 +6,8 @@ from isu.webapp import app
 from zope.component import getUtility, getSiteManager
 
 from pyramid.paster import get_app
-from icc.cellula.tasks import DocumentAcceptingTask
+from icc.cellula.tasks import DocumentAcceptingTask, FileSystemScanTask
+
 from pyramid.threadlocal import get_current_registry
 
 from icc.docnet.tests import StopTests
@@ -20,7 +21,7 @@ DATA_PATH = pkg_resources.resource_filename(
 DATA_PATH = os.path.abspath(DATA_PATH)
 SRC = os.path.join(DATA_PATH, "source")
 
-application = get_app('icc.cellula-test.ini', name='main')
+application = get_app('icc.cellula-test-file.ini', name='main')
 
 
 def bookname(name):
@@ -46,6 +47,9 @@ class TestBasic:
         headers = {"File-Name": self.book1name}
         content = open(book, "rb").read()
         DocumentAcceptingTask(content, headers).enqueue(block=False, view=None)
+
+    def test_fs_scan(self):
+        FileSystemScanTask().enqueue()
 
     def tearDown(self):
         pass
