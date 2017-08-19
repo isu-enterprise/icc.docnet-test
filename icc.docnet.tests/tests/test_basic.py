@@ -57,7 +57,7 @@ class TestBasic:
         DocumentAcceptingTask(content, headers).enqueue(block=False, view=None)
 
     def test_fs_scan(self):
-        # FileSystemScanTask().enqueue()
+        FileSystemScanTask().enqueue()
         pass
 
     def tearDown(self):
