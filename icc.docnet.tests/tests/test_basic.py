@@ -3,10 +3,14 @@ from nose.tools import assert_raises, nottest
 
 from isu.webapp.interfaces import IApplication
 from isu.webapp import app
-from zope.component import getUtility
+from zope.component import getUtility, getSiteManager
 
-from pyramid.paster import get_appsettings
+from pyramid.paster import get_app
 from icc.cellula.tasks import DocumentAcceptingTask
+from pyramid.threadlocal import get_current_registry
+
+from icc.docnet.tests import StopTests
+import icc.docnet.tests.app as testapp
 
 import pkg_resources
 import os.path
@@ -16,15 +20,7 @@ DATA_PATH = pkg_resources.resource_filename(
 DATA_PATH = os.path.abspath(DATA_PATH)
 SRC = os.path.join(DATA_PATH, "source")
 
-
-def configurator(global_config, **settings):
-    config = app.configurator(global_config, **settings)
-    return app.create_application(config)
-    pass
-
-
-settings = get_appsettings('icc.cellula-test.ini', name='main')
-application = configurator(settings)
+application = get_app('icc.cellula-test.ini', name='main')
 
 
 def bookname(name):
@@ -53,3 +49,15 @@ class TestBasic:
 
     def tearDown(self):
         pass
+
+
+# This test set must be the last one in the source
+
+class TestZStopQueue:
+
+    def setUp(self):
+        pass
+
+    def test_stop_queue(self):
+        event = StopTests(application)
+        getSiteManager().notify(event)

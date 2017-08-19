@@ -16,9 +16,15 @@
       />
 
   <subscriber
+      for="icc.docnet.tests.StopTests"
+      handler="icc.cellula.subscribers.stop_worker_queue"
+      />
+
+  <!--
+  <subscriber
       for="pyramid.events.ApplicationCreated"
       handler="icc.docnet.tests.subscribers.bad_subscriber"
       />
-
+  -->
 
 </configure>
