@@ -70,8 +70,12 @@ class TestBasic:
         content = open(book, "rb").read()
         DocumentAcceptingTask(content, headers).enqueue(block=False, view=None)
 
-    def test_fs_scan(self):
+    def test_fs_scan_one_file_processing(self):
         DebugFileSystemScanTask().enqueue()
+
+    def test_fs_scan_all_files_processing(self):
+        # One file is already processed
+        FileSystemScanTask().enqueue()
 
     def tearDown(self):
         pass
