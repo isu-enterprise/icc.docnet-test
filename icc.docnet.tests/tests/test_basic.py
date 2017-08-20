@@ -2,11 +2,12 @@ from nose.plugins.skip import SkipTest
 from nose.tools import assert_raises, nottest
 
 from isu.webapp.interfaces import IApplication
+from isu.enterprise.interfaces import IConfigurator
 from isu.webapp import app
 from zope.component import getUtility, getSiteManager
 
 from pyramid.paster import get_app, setup_logging
-from icc.cellula.tasks import DocumentAcceptingTask, FileSystemScanTask
+from icc.cellula.tasks import DocumentAcceptingTask, FileSystemScanTask, ScannedFilesProcessingTask
 
 from pyramid.threadlocal import get_current_registry
 
@@ -35,9 +36,21 @@ logger = logging.getLogger("icc.cellula")
 def bookname(name):
     return os.path.join(SRC, name)
 
+
+class DebugFileSystemScanTask(FileSystemScanTask):
+
+    def finalize(self):
+        def_bunch_size = 10
+        config = getUtility(IConfigurator, "configuration")
+        bunch_size = config.getint(
+            "scanner", "bunch_size", fallback=def_bunch_size)
+        if self.files:
+            files = self.files[:1]
+            logger.debug("PROCESSING FILES {}".format(files))
+            self.enqueue(ScannedFilesProcessingTask(files, bunch_size))
+
+
 #@SkipTest
-
-
 class TestBasic:
 
     def setUp(self):
@@ -50,6 +63,7 @@ class TestBasic:
     def test_import_file(self):
         assert self.book1.endswith("pdf")
 
+    @nottest
     def test_book_processing(self):
         book = self.book1
         headers = {"File-Name": self.book1name}
@@ -57,8 +71,7 @@ class TestBasic:
         DocumentAcceptingTask(content, headers).enqueue(block=False, view=None)
 
     def test_fs_scan(self):
-        FileSystemScanTask().enqueue()
-        pass
+        DebugFileSystemScanTask().enqueue()
 
     def tearDown(self):
         pass
