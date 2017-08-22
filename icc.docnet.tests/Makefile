@@ -4,7 +4,7 @@
 	run-tests gdb-test clean \
 	env dev dev-icc.rdfservice \
 	dev-icc.restfuldocs py pot init-ru update-ru comp-cat \
-	upd-cat adjust-ini devel serv serve server
+	upd-cat adjust-ini devel serv serve server nose nosetests
 
 LPYTHON=python3
 PYTHON=$(LPYTHON)
@@ -81,3 +81,7 @@ upd-cat: pot update-ru comp-cat
 
 clean:
 	$(PYTHON) setup.py clean
+
+nose nosetests:
+	nosetests -s .
+	
